@@ -44,22 +44,12 @@
 
 <script>
 import {stripscript, validateMail, validatePwd, validateVcode} from  '@/utils/validate'
-import {reactive,ref,isRef,toRefs,onMounted} from  '@vue/composition-api'
     export default{
         name : "login",
-        //setup放置data，生命周期，自定义函数
-
-        setup(props, context){
-            //context.attrs
-            //context.slots
-            //context.parent
-            //context.root
-            //context.emit
-            context.refs
-
+        data (){
             //表单验证
             //验证验证码
-            let checkCode = (rule, value, callback) => {
+            var checkCode = (rule, value, callback) => {
             if (value === '') {
             return callback(new Error('请输入验证码'));
             }
@@ -72,7 +62,7 @@ import {reactive,ref,isRef,toRefs,onMounted} from  '@vue/composition-api'
         };
         
         //验证用户名
-        let validateUsername = (rule, value, callback) => {
+        var validateUsername = (rule, value, callback) => {
             if (value === '') {
             callback(new Error('请输入用户名'));
             } else if(validateMail(value)){
@@ -83,9 +73,9 @@ import {reactive,ref,isRef,toRefs,onMounted} from  '@vue/composition-api'
             }
         };
         //验证密码
-        let validatePassword = (rule, value, callback) => {
-            ruleForm.password=stripscript(value)
-            value=ruleForm.password
+        var validatePassword = (rule, value, callback) => {
+            this.ruleForm.password=stripscript(value)
+            value=this.ruleForm.password
             if (value === '') {
             callback(new Error('请输入密码'));
             } else if (validatePwd(value)) {
@@ -95,35 +85,32 @@ import {reactive,ref,isRef,toRefs,onMounted} from  '@vue/composition-api'
             }
         };
           //验证确认密码
-        let validatePasswords = (rule, value, callback) => {
-            ruleForm.passwords=stripscript(value)
-            value=ruleForm.passwords
+        var validatePasswords = (rule, value, callback) => {
+            this.ruleForm.passwords=stripscript(value)
+            value=this.ruleForm.passwords
             if (value === '') {
             callback(new Error('请再次输入密码'));
-            } else if (value !=  ruleForm.password) {
+            } else if (value !=  this.ruleForm.password) {
             callback(new Error('两次输入的密码不一致'));
             } else {
             callback();
             }
         };
-
-            //声明数据
-            const manuTab=reactive ([
+            return{
+                manuTab:[
                     {txt:"登陆",current:true,type:'login'},
                     {txt:"注册",current:false,type:'register'}
-                ])
-            console.log(manuTab)
-             //模块值
-           const model= ref('register')
-           console.log(model.value)
-            //表单验证
-          const ruleForm= reactive({
-                username: '',
-                password: '',
-                passwords: '',
-                code: ''
-                }) 
-        const rules=({
+                ],
+          //模块值
+          model:'register',
+          //表单验证
+          ruleForm: {
+          username: '',
+          password: '',
+          passwords: '',
+          code: ''
+        },
+        rules: {
           username: [
             { validator: validateUsername, trigger: 'blur' }
           ],
@@ -136,57 +123,41 @@ import {reactive,ref,isRef,toRefs,onMounted} from  '@vue/composition-api'
           code: [
             { validator: checkCode, trigger: 'blur' }
           ]
-        })
+        }
+            }
+        },
 
-           /**
-            * 声明函数
-            */
-           //数据驱动视图渲染
-            const toggleManu=(data=>{ 
-                console.log(data)
-                manuTab.forEach(element => {
+        created(){},
+        mounted(){},
+        methods:{
+            //数据驱动视图渲染
+            toggleManu(data){
+                //console.log(data)
+                this.manuTab.forEach(element => {
                     element.current=false
                 });
                 data.current=true
-                model.value=data.type})
-               
+                this.model=data.type
+            },
         //表单相关方法
-        const submitForm=(formName=>{ 
-            context.refs[formName].validate((valid) => {
+        submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
           if (valid) {
             alert('submit!');
           } else {
             console.log('error submit!!');
             return false;
           }
-        })}) 
-           
-           /**
-            * 声明生命周期，挂载后完成
-            */
-           onMounted(()=>{
-
-           })
-
-           //返回值
-           return{
-               manuTab,
-               model,
-               toggleManu,
-               submitForm,
-               ruleForm,
-               rules
-           }
+        });
+      },
         },
-
-        created(){},     
     }
 </script>
 
 <style lang="scss" scoped>
     #login{
         height: 100vh;
-        background-color: rgb(56, 101, 143);
+        background-color: rgb(95, 90, 122);
     }
     .login-wrap{
         width: 330px;
@@ -204,7 +175,7 @@ import {reactive,ref,isRef,toRefs,onMounted} from  '@vue/composition-api'
             cursor: pointer;
         };
         .current{
-            background-color: #2b4f86;
+            background-color: #444268;
         };
     .login-form{
         //margin-top: 29px;
